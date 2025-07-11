@@ -12,7 +12,7 @@ export function SearchBox({ onSearchUpdate, onPageUpdate }: SearchBoxProps) {
       onSearchUpdate(e.target.value);
       onPageUpdate(1);
     },
-    500
+    1000
   );
   return (
     <input

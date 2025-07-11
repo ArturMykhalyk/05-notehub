@@ -39,11 +39,11 @@ export const createNote = async (note: FormValues):Promise<Note> => {
   };
 
 
-export const deleteNote = async (id: number): Promise<{ message: string }> => {
+export const deleteNote = async (id: number): Promise<Note> => {
      const headers = {
         Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN }`,
       }
-    const response = await axios.delete<{ message: string }>(
+    const response = await axios.delete<Note>(
         `https://notehub-public.goit.study/api/notes/${id}`,{headers}
     );
     return response.data;

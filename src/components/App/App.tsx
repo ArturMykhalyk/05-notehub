@@ -1,21 +1,16 @@
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { NoteList } from '../NoteList/NoteList';
 import Pagination from '../Pagination/Pagination';
 import { SearchBox } from '../SearchBox/SearchBox';
 import css from './App.module.css';
 import { useState } from 'react';
-import { deleteNote, fetchNotes } from '../../services/noteService';
+import { fetchNotes } from '../../services/noteService';
 import { Loader } from '../Loader/Loader';
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
-
 import { ErrorMessageEmpty } from '../ErrorMessageEmpty/ErrorMessageEmpty';
-
 import { Modal } from '../Modal/Modal';
+import { Toaster } from 'react-hot-toast';
+import { NoteForm } from '../NoteForm/NoteForm';
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,18 +25,6 @@ function App() {
 
   const totalPages = data?.totalPages ?? 0;
 
-  const queryClient = useQueryClient();
-
-  const mutationDelete = useMutation({
-    mutationFn: (id: number) => deleteNote(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-    },
-  });
-
-  const handleClickDelete = (id: number) => {
-    mutationDelete.mutate(id);
-  };
   const handleCreateNote = () => {
     setIsOpenModal(true);
   };
@@ -63,11 +46,14 @@ function App() {
       </header>
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
+      <Toaster position="top-right" />
       {isSuccess && data?.notes.length === 0 && <ErrorMessageEmpty />}
-      {isSuccess && data.notes.length > 0 && (
-        <NoteList notes={data.notes} onClickDelete={handleClickDelete} />
+      {isSuccess && data.notes.length > 0 && <NoteList notes={data.notes} />}
+      {isOpenModal && (
+        <Modal onClose={handleCloseModal}>
+          <NoteForm onClose={handleCloseModal} />
+        </Modal>
       )}
-      {isOpenModal && <Modal onClose={handleCloseModal} />}
     </div>
   );
 }

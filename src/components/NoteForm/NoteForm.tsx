@@ -5,6 +5,7 @@ import { FormValues } from '../../types/note';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createNote } from '../../services/noteService';
 import * as Yup from 'yup';
+import toast from 'react-hot-toast';
 
 const NoteFormSchema = Yup.object().shape({
   title: Yup.string()
@@ -31,9 +32,13 @@ export function NoteForm({ onClose }: NoteFormProps) {
 
   const mutation = useMutation({
     mutationFn: createNote,
-    onSuccess: () => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       onClose();
+      toast.success(`Note "${data.title}" created.`);
+    },
+    onError: () => {
+      toast.error(`Failed to create note.`);
     },
   });
 
