@@ -11,6 +11,7 @@ import { ErrorMessageEmpty } from '../ErrorMessageEmpty/ErrorMessageEmpty';
 import { Modal } from '../Modal/Modal';
 import { Toaster } from 'react-hot-toast';
 import { NoteForm } from '../NoteForm/NoteForm';
+import { useDebouncedCallback } from 'use-debounce';
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,10 +30,17 @@ function App() {
     setIsOpenModal(true);
   };
   const handleCloseModal = () => setIsOpenModal(false);
+  const handleChange = useDebouncedCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(e.target.value);
+      setCurrentPage(1);
+    },
+    1000
+  );
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox onSearchUpdate={setQuery} onPageUpdate={setCurrentPage} />
+        <SearchBox onChange={handleChange} />
         {isSuccess && totalPages > 1 && (
           <Pagination
             page={currentPage}
